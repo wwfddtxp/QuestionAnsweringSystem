@@ -1,0 +1,120 @@
+# ===================================================================
+# Spring Boot configuration for the "prod" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# ===================================================================
+# ===================================================================
+# Spring Boot configuration for the "dev" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# ===================================================================
+logging:
+    level:
+        ROOT: debug
+        com.ctsi.sampleapp: debug
+
+spring:
+    profiles:
+        active: prod
+        include: swagger
+    jackson:
+        serialization.indent_output: true
+        time-zone: GMT+8
+    jpa:
+        hibername:
+           ddl-auto:none          
+                       
+    liquibase: 
+       enabled: true
+       change-log: classpath:/db/changelog/master.xml
+    datasource:
+                
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/qa_system?useUnicode=true&characterEncoding=utf8&useSSL=false
+                        
+        type: com.zaxxer.hikari.HikariDataSource
+        username: root
+        password: root
+        hikari:
+            #最大连接池数
+            maximumPoolSize: 20
+            data-source-properties:
+                cachePrepStmts: true
+                prepStmtCacheSize: 250
+                prepStmtCacheSqlLimit: 2048
+                useServerPrepStmts: true
+    #国际化
+    messages:
+        basename: i18n/messages
+        encoding: UTF-8
+server: 
+   port: 9000
+
+ctsi:
+    # CORS is only enabled by default with the "dev" profile, so BrowserSync can access the API
+    cors:
+        allowed-origins: "*"
+        allowed-methods: "*"
+        allowed-headers: "*"
+        exposed-headers: "Authorization,Link,X-Total-Count"
+        allow-credentials: true
+        max-age: 1800
+        path: "api/**"
+    #允许跨域，多个以逗号分隔
+    corspaths: "/api/**"
+    #新增用户默认密码
+    login-password: ctsi1234    
+   
+    log:
+      #是否启用操作日志
+      operation-log:
+         enable: false
+      #是否启用登录日志
+      login-log:
+         enable: false
+    jwtfilter:
+       enable: true
+    security:
+        authentication:
+            jwt:
+                secret: my-secret-token-to-change-in-production
+                # Token is valid 24 hours
+                token-validity-in-seconds: 86400
+                token-validity-in-seconds-for-remember-me: 2592000   
+    captcha:
+        keyProvider: simpleCaptchaKeyProvider
+         #验证码组件缓存实现，提供两种实现，redis和基于guava的缓存，redis支持集群部署，guava只支持单机使用。可选值：guavaCaptchaCache，redisCaptchaCache
+        cache: guavaCaptchaCache
+    access:
+        #组织名
+        groupId: ${project.groupId}
+        #项目名
+        projectName: ${project.artifactId}
+        #项目版本
+        projectVersion: ${project.version}
+        #组件使用用户（比翼平台账号用户名）
+        userName: wangfeng
+        #是否启用组件统计，关闭则无法上报组件调用量，影响积分
+        #enable: true
+        #统计信息发送地址
+        url: https://s.ctbiyi.com/api
+        #日志文件
+        filePath: /logs
+        #发送策略，毫秒
+        scheduledRate: 180000
+
+mybatis:
+    configLocation: classpath:/mybatis-config.xml
+
+pagehelper:
+     helperDialect: mysql
+     reasonable: true
+     supportMethodsArguments: true
+     pageSizeZero: true
+
+management: 
+   health: 
+      redis: 
+         enabled: false
